@@ -6,6 +6,9 @@ const { viewDepartments, addDepartment } = require('./lib/departments');
 const { viewRoles, addRole } = require('./lib/roles');
 const { viewEmployees, addEmployee, updateEmployee } = require('./lib/employees');
 
+const viewDB = require('./db/viewDB');
+
+
 function employmentTracker() {
     connection.connect(err => {
         if (err) throw err;
@@ -35,8 +38,9 @@ mainMenu = function () {
             nextAction = parseInt(nextAction);
             if (nextAction === 1) {
                 return viewDepartments().then(rows => {
-                    console.log(rows);
+                    console.table(rows);
                 });
+
             }
             if (nextAction === 2) {
                 return viewRoles().then(rows => {
@@ -49,18 +53,16 @@ mainMenu = function () {
                 });
             }
             if (nextAction === 4) {
-                // new function for adding dept.
                 addNewDept();
             }
             if (nextAction === 5) {
-                // new function for adding role
-
+                addNewRole();
             }
             if (nextAction === 6) {
-                // new function for adding employee
+                addNewEmployee();
             }
             if (nextAction === 7) {
-                // new function for updating employee
+                updateEmployeeRole();
             }
         });
 
@@ -71,12 +73,59 @@ addNewDept = function () {
         {
             type: 'input',
             name: 'deptName',
-            message: 'Enter a name for your new Department: '
+            message: 'Enter a name for your new department: '
         }
     ])
-        .then(deptName => {
-            addDepartment(deptName);
+        .then(newName => {
+            const newDept = newName.deptName;
+            addDepartment(newDept);
         })
 };
+
+addNewRole = function () {
+    let deptArray = [];
+    viewDepartments().then((depts) => {
+        for (var i = 0; i < depts.length; i++) {
+            deptArray.push(depts[i].name);
+        }
+        return depts;
+    }).then(rows => {
+        inquirer.prompt([
+            {
+                type: 'input',
+                name: 'roleName',
+                message: 'Enter a name for your new role: '
+            },
+            {
+                type: 'input',
+                name: 'roleSalary',
+                message: 'Enter the salary for this new role: $'
+            },
+            {
+                type: 'list',
+                name: 'roleDepartment',
+                message: 'Select the department for this role: ',
+                choices: deptArray
+            }
+        ]).then(responseType => {
+            let deptId;
+
+            for (var i = 0; i < rows.length; i++) {
+                if (responseType.roleDepartment == rows[i].name) {
+                    deptId = rows[i].id;
+                    console.log(deptId);
+                }
+            }
+            addRole(responseType.roleName, responseType.roleSalary, deptId);
+        });
+    });
+};
+
+addNewEmployee = function () {
+
+}
+
+
+
 
 employmentTracker();

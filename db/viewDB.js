@@ -9,9 +9,11 @@ class viewsDB {
         return this.connection.promise().query(
             `SELECT id, name FROM departments;`, [], function (err, res) {
                 if (err) throw err;
-                return res;
+                //return res;
             }
-        )
+        ).then(([rows, fields]) => {
+            return rows;
+        });
     }
 
     viewAllRoles() {
