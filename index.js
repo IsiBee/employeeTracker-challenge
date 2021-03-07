@@ -1,10 +1,20 @@
+const connection = require('./db/database');
 const inquirer = require('inquirer');
+const cTable = require('console.table');
 
 const { viewDepartments, addDepartment } = require('./lib/departments');
 const { viewRoles, addRole } = require('./lib/roles');
 const { viewEmployees, addEmployee, updateEmployee } = require('./lib/employees');
 
-trackTeam = () => {
+function employmentTracker() {
+    connection.connect(err => {
+        if (err) throw err;
+        console.log('connected as id ' + connection.threadId);
+        mainMenu();
+    })
+};
+
+mainMenu = function () {
     inquirer
         .prompt([
             {
@@ -24,16 +34,49 @@ trackTeam = () => {
             let nextAction = selectionType.menuSelect.split(':')[0];
             nextAction = parseInt(nextAction);
             if (nextAction === 1) {
-                viewDepartments();
+                return viewDepartments().then(rows => {
+                    console.log(rows);
+                });
             }
             if (nextAction === 2) {
-                viewRoles();
+                return viewRoles().then(rows => {
+                    console.table(rows[0]);
+                });
             }
             if (nextAction === 3) {
-                viewEmployees();
+                return viewEmployees().then(rows => {
+                    console.table(rows[0]);
+                });
             }
-        })
-        .then(console.log('success!'))
+            if (nextAction === 4) {
+                // new function for adding dept.
+                addNewDept();
+            }
+            if (nextAction === 5) {
+                // new function for adding role
+
+            }
+            if (nextAction === 6) {
+                // new function for adding employee
+            }
+            if (nextAction === 7) {
+                // new function for updating employee
+            }
+        });
+
 };
 
-trackTeam();
+addNewDept = function () {
+    inquirer.prompt([
+        {
+            type: 'input',
+            name: 'deptName',
+            message: 'Enter a name for your new Department: '
+        }
+    ])
+        .then(deptName => {
+            addDepartment(deptName);
+        })
+};
+
+employmentTracker();
