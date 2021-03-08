@@ -88,6 +88,7 @@ addNewRole = function () {
         for (var i = 0; i < depts.length; i++) {
             deptArray.push(depts[i].name);
         }
+        console.log(depts);
         return depts;
     }).then(rows => {
         inquirer.prompt([
@@ -122,10 +123,69 @@ addNewRole = function () {
 };
 
 addNewEmployee = function () {
+    let roleArray = [];
+    let managerArr = [];
+    viewRoles().then(roles => {
+        for (var i = 0; i < roles.length; i++) {
+            roleArray.push(roles[i].title);
+        }
+        console.log(roles);
+        return (roles);
+    }).then(roles => {
+        viewEmployees().then(employees => {
+            for (var i = 0; i < employees.length; i++) {
+                managerArr.push(`${employees[i].first_name} ${employees[i].last_name}`);
+            }
+            console.log(employees);
+            return [roles, employees];
+        })
+            .then(([roles, employees]) => {
+                inquirer.prompt([
+                    {
+                        type: 'input',
+                        name: 'empFName',
+                        message: "Enter employee's first name: "
+                    },
+                    {
+                        type: 'input',
+                        name: 'empLName',
+                        message: "Enter employee's last name: "
+                    },
+                    {
+                        type: 'list',
+                        name: 'role',
+                        message: "Select the employee's role: ",
+                        choices: roleArray
+                    },
+                    {
+                        type: 'list',
+                        name: 'manager',
+                        message: "Select the employee's manager: ",
+                        choices: managerArr
+                    }
 
-}
+                ]).then(responseType => {
+                    let roleId;
+                    for (var i = 0; i < roles.length; i++) {
+                        if (responseType.role == roles[i].title) {
+                            roleId = roles[i].id;
+                            console.log(roleId);
+                        }
+                    }
 
+                    let managerId;
 
+                    for (var i = 0; i < employees.length; i++) {
+                        if (responseType.manager == `${employees[i].firstName} ${employees[i].lastName}`) {
+                            managerId = employees[i].manager_id;
+                            console.log(managerId);
+                        }
+                    }
 
+                    addEmployee(responseType.empFName, responseType.empLName, roleId, managerId);
+                })
+            })
+    });
+};
 
 employmentTracker();

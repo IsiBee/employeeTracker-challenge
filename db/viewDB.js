@@ -9,7 +9,6 @@ class viewsDB {
         return this.connection.promise().query(
             `SELECT id, name FROM departments;`, [], function (err, res) {
                 if (err) throw err;
-                //return res;
             }
         ).then(([rows, fields]) => {
             return rows;
@@ -25,9 +24,10 @@ class viewsDB {
             [],
             function (err, res) {
                 if (err) throw err;
-                return res;
             }
-        )
+        ).then(([rows, fields]) => {
+            return rows;
+        });
     }
 
     viewAllEmployees() {
@@ -40,9 +40,10 @@ class viewsDB {
         return this.connection.promise().query(
             sql, [], function (err, res) {
                 if (err) throw err;
-                return res;
             }
-        )
+        ).then(([rows, fields]) => {
+            return rows;
+        });
     }
 };
 //exporting an INSTANCE of the DB

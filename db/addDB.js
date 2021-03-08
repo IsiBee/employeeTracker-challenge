@@ -28,6 +28,18 @@ class addDB {
             }
         )
     }
+
+    createEmployee(fName, lName, r_id, m_id) {
+        const sql = `INSERT INTO employees (first_name, last_name, role_id, manager_id) 
+        VALUES (?,?,?,?);`;
+        const params = [fName, lName, r_id, m_id];
+        return this.connection.promise().query(
+            sql, params, function (err, res) {
+                if (err) throw err;
+                return res;
+            }
+        )
+    }
 }
 
 module.exports = new addDB(connection);
