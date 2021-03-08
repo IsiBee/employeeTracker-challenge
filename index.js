@@ -37,18 +37,17 @@ mainMenu = function () {
             let nextAction = selectionType.menuSelect.split(':')[0];
             nextAction = parseInt(nextAction);
             if (nextAction === 1) {
-                return viewDepartments().then(rows => {
+                viewDepartments().then(rows => {
                     console.table(rows);
                 }).then(console.log('\n'));
-
             }
             if (nextAction === 2) {
-                return viewRoles().then(rows => {
+                viewRoles().then(rows => {
                     console.table(rows);
                 }).then(console.log('\n'));
             }
             if (nextAction === 3) {
-                return viewEmployees().then(rows => {
+                viewEmployees().then(rows => {
                     console.table(rows);
                 }).then(console.log('\n'));
             }
@@ -65,7 +64,7 @@ mainMenu = function () {
                 updateEmployeeRole();
             }
         })
-        .then(mainMenu());
+
 
 };
 
@@ -86,12 +85,13 @@ addNewDept = function () {
 
 addNewRole = function () {
     let deptArray = [];
-    viewDepartments().then((depts) => {
+    viewDepartments().then(depts => {
         for (var i = 0; i < depts.length; i++) {
             deptArray.push(depts[i].name);
         }
+
         return depts;
-    }).then(rows => {
+    }).then(departments => {
         inquirer.prompt([
             {
                 type: 'input',
@@ -112,15 +112,14 @@ addNewRole = function () {
         ]).then(responseType => {
             let deptId;
 
-            for (var i = 0; i < rows.length; i++) {
-                if (responseType.roleDepartment == rows[i].name) {
-                    deptId = rows[i].id;
+            for (var i = 0; i < departments.length; i++) {
+                if (responseType.roleDepartment == departments[i].name) {
+                    deptId = departments[i].id;
                 }
             }
             addRole(responseType.roleName, responseType.roleSalary, deptId);
         });
     });
-    mainMenu();
 };
 
 addNewEmployee = function () {
@@ -183,7 +182,6 @@ addNewEmployee = function () {
                 })
             })
     });
-    mainMenu();
 };
 
 updateEmployeeRole = function () {
@@ -231,7 +229,6 @@ updateEmployeeRole = function () {
                                 empId = employees[i].id;
                             }
                         }
-
                         updateEmployee(empId, roleId);
                     })
             });
