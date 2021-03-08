@@ -171,10 +171,10 @@ addNewEmployee = function () {
                     }
 
                     let managerId;
-
+                    console.log(employees);
                     for (var i = 0; i < employees.length; i++) {
-                        if (responseType.manager == `${employees[i].first_name} ${employees[i].last_name}`) {
-                            managerId = employees[i].manager_id;
+                        if (responseType.manager === `${employees[i].first_name} ${employees[i].last_name}`) {
+                            managerId = employees[i].id;
                         }
                     }
 
