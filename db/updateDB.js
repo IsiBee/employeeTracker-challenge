@@ -6,7 +6,7 @@ class updateDB {
     }
 
     changeEmployee(emp, role) {
-        const params = [emp, role];
+        const params = [role, emp];
         const sql = `UPDATE employees SET role_id = ? WHERE id = ?`;
         return this.connection.promise().query(
             sql,
@@ -17,7 +17,7 @@ class updateDB {
         )
             .then(([rows, fields]) => {
                 return rows;
-            });
+            })
     }
 }
 
