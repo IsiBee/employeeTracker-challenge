@@ -39,18 +39,18 @@ mainMenu = function () {
             if (nextAction === 1) {
                 return viewDepartments().then(rows => {
                     console.table(rows);
-                });
+                }).then(console.log('\n'));
 
             }
             if (nextAction === 2) {
                 return viewRoles().then(rows => {
-                    console.table(rows[0]);
-                });
+                    console.table(rows);
+                }).then(console.log('\n'));
             }
             if (nextAction === 3) {
                 return viewEmployees().then(rows => {
-                    console.table(rows[0]);
-                });
+                    console.table(rows);
+                }).then(console.log('\n'));
             }
             if (nextAction === 4) {
                 addNewDept();
@@ -64,7 +64,8 @@ mainMenu = function () {
             if (nextAction === 7) {
                 updateEmployeeRole();
             }
-        });
+        })
+        .then(mainMenu());
 
 };
 
@@ -80,6 +81,7 @@ addNewDept = function () {
             const newDept = newName.deptName;
             addDepartment(newDept);
         })
+
 };
 
 addNewRole = function () {
@@ -88,7 +90,6 @@ addNewRole = function () {
         for (var i = 0; i < depts.length; i++) {
             deptArray.push(depts[i].name);
         }
-        console.log(depts);
         return depts;
     }).then(rows => {
         inquirer.prompt([
@@ -114,12 +115,12 @@ addNewRole = function () {
             for (var i = 0; i < rows.length; i++) {
                 if (responseType.roleDepartment == rows[i].name) {
                     deptId = rows[i].id;
-                    console.log(deptId);
                 }
             }
             addRole(responseType.roleName, responseType.roleSalary, deptId);
         });
     });
+    mainMenu();
 };
 
 addNewEmployee = function () {
@@ -129,14 +130,12 @@ addNewEmployee = function () {
         for (var i = 0; i < roles.length; i++) {
             roleArray.push(roles[i].title);
         }
-        console.log(roles);
         return (roles);
     }).then(roles => {
         viewEmployees().then(employees => {
             for (var i = 0; i < employees.length; i++) {
                 managerArr.push(`${employees[i].first_name} ${employees[i].last_name}`);
             }
-            console.log(employees);
             return [roles, employees];
         })
             .then(([roles, employees]) => {
@@ -169,22 +168,73 @@ addNewEmployee = function () {
                     for (var i = 0; i < roles.length; i++) {
                         if (responseType.role == roles[i].title) {
                             roleId = roles[i].id;
-                            console.log(roleId);
                         }
                     }
 
                     let managerId;
 
                     for (var i = 0; i < employees.length; i++) {
-                        if (responseType.manager == `${employees[i].firstName} ${employees[i].lastName}`) {
+                        if (responseType.manager == `${employees[i].first_name} ${employees[i].last_name}`) {
                             managerId = employees[i].manager_id;
-                            console.log(managerId);
                         }
                     }
 
                     addEmployee(responseType.empFName, responseType.empLName, roleId, managerId);
                 })
             })
+    });
+    mainMenu();
+};
+
+updateEmployeeRole = function () {
+    let roleArray = [];
+    let empArr = [];
+    viewRoles().then(roles => {
+        for (var i = 0; i < roles.length; i++) {
+            roleArray.push(roles[i].title);
+        }
+        return (roles);
+    }).then(roles => {
+        viewEmployees().then(employees => {
+            for (var i = 0; i < employees.length; i++) {
+                empArr.push(`${employees[i].first_name} ${employees[i].last_name}`);
+            }
+            return [roles, employees];
+        })
+            .then(([roles, employees]) => {
+                inquirer.prompt([
+                    {
+                        type: 'list',
+                        name: 'employee',
+                        message: 'Select the employee you wish to update: ',
+                        choices: empArr
+                    },
+                    {
+                        type: 'list',
+                        name: 'newRole',
+                        message: "Select your employee's new role: ",
+                        choices: roleArray
+                    }
+                ])
+                    .then(responseType => {
+                        let roleId;
+                        for (var i = 0; i < roles.length; i++) {
+                            if (responseType.newRole == roles[i].title) {
+                                roleId = roles[i].id;
+                            }
+                        }
+
+                        let empId;
+
+                        for (var i = 0; i < employees.length; i++) {
+                            if (responseType.employee == `${employees[i].first_name} ${employees[i].last_name}`) {
+                                empId = employees[i].id;
+                            }
+                        }
+
+                        updateEmployee(empId, roleId);
+                    })
+            });
     });
 };
 

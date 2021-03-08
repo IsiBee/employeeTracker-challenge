@@ -31,7 +31,7 @@ class viewsDB {
     }
 
     viewAllEmployees() {
-        const sql = `SELECT * 
+        const sql = `SELECT employees.*,roles.*,departments.name 
                     FROM employees
                     LEFT JOIN roles 
                     ON role_id = roles.id
@@ -43,7 +43,7 @@ class viewsDB {
             }
         ).then(([rows, fields]) => {
             return rows;
-        });
+        })
     }
 };
 //exporting an INSTANCE of the DB
