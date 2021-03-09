@@ -7,6 +7,7 @@ This challenge is mostly about writing database schema's and SQL queries and bei
 ## Additional Information
 ### Notes
 I had such a difficult time with this challenge. The initial setup with the SQL queries was straightforward, however the promise structure has thrown me. I am so completely out of my depth. The biggest piece I have to fix on this is the ability to recall mainMenu() right now the user will have to exit the app and re-enter every time and I cannot figure out why. 
+EDIT: I was able to figure out how to loop the mainMenu function in the promise. You must call mainMenu without the ().
 
 Another challenge I ran into was a weird bug where the foreign key column would replace the primary key column for roles and employees. The way I solved it was by explicitly calling the column names roles.id and roles.department_id. 
 
