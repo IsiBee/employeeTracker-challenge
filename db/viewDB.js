@@ -1,5 +1,6 @@
-// we will create our own orm wiht PROMISES
+// we will create our own orm with PROMISES
 const connection = require('./database');
+
 
 class viewsDB {
     constructor(connection) {
@@ -12,7 +13,7 @@ class viewsDB {
             }
         ).then(([rows, fields]) => {
             return rows;
-        });
+        })
     }
 
     viewAllRoles() {

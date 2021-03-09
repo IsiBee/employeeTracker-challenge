@@ -12,12 +12,11 @@ const viewDB = require('./db/viewDB');
 function employmentTracker() {
     connection.connect(err => {
         if (err) throw err;
-        console.log('connected as id ' + connection.threadId);
         mainMenu();
     })
 };
 
-mainMenu = function () {
+mainMenu = async function () {
     inquirer
         .prompt([
             {
@@ -39,17 +38,21 @@ mainMenu = function () {
             if (nextAction === 1) {
                 viewDepartments().then(rows => {
                     console.table(rows);
-                }).then(console.log('\n'));
+                }).then(console.log('\n'))
+                    .then(mainMenu);
+
             }
             if (nextAction === 2) {
                 viewRoles().then(rows => {
                     console.table(rows);
-                }).then(console.log('\n'));
+                }).then(console.log('\n'))
+                    .then(mainMenu);
             }
             if (nextAction === 3) {
-                viewEmployees().then(rows => {
+                return viewEmployees().then(rows => {
                     console.table(rows);
-                }).then(console.log('\n'));
+                }).then(console.log('\n'))
+                    .then(mainMenu);
             }
             if (nextAction === 4) {
                 addNewDept();
@@ -63,7 +66,7 @@ mainMenu = function () {
             if (nextAction === 7) {
                 updateEmployeeRole();
             }
-        })
+        });
 
 
 };
@@ -78,8 +81,9 @@ addNewDept = function () {
     ])
         .then(newName => {
             const newDept = newName.deptName;
-            addDepartment(newDept);
+            return addDepartment(newDept);
         })
+        .then(mainMenu)
 
 };
 
@@ -117,8 +121,9 @@ addNewRole = function () {
                     deptId = departments[i].id;
                 }
             }
-            addRole(responseType.roleName, responseType.roleSalary, deptId);
-        });
+            return addRole(responseType.roleName, responseType.roleSalary, deptId);
+        })
+            .then(mainMenu)
     });
 };
 
@@ -177,8 +182,9 @@ addNewEmployee = function () {
                         }
                     }
 
-                    addEmployee(responseType.empFName, responseType.empLName, roleId, managerId);
+                    return addEmployee(responseType.empFName, responseType.empLName, roleId, managerId);
                 })
+                    .then(mainMenu)
             })
     });
 };
@@ -229,8 +235,9 @@ updateEmployeeRole = function () {
                                 empId = employees[i].id;
                             }
                         }
-                        updateEmployee(empId, roleId);
+                        return updateEmployee(empId, roleId);
                     })
+                    .then(mainMenu)
             });
     });
 };
